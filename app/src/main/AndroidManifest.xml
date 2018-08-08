@@ -3,7 +3,7 @@
     package="com.example.seven.coolweather">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    uj
+
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"

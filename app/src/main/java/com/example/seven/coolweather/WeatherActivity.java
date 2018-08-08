@@ -1,16 +1,20 @@
 package com.example.seven.coolweather;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.seven.coolweather.gson.Forecast;
 import com.example.seven.coolweather.gson.Weather;
 import com.example.seven.coolweather.util.HttpUtil;
@@ -49,13 +53,22 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView carWashText;
 
     private TextView sportText;
+    
+    private ImageView bingPicImg;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.title);
+        if (Build.VERSION.SDK_INT >= 21){  //判断系统是否是安卓5.0以上
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);  //将状态栏设置为透明色
+        }
+        setContentView(R.layout.activity_weather);
         //初始化各控件
+        bingPicImg = findViewById(R.id.bing_pic_img);
         weatherLayout = findViewById(R.id.weather_layout);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime = findViewById(R.id.title_update_time);
@@ -79,7 +92,16 @@ public class WeatherActivity extends AppCompatActivity {
             //weatherLayout.setVisibility(View.INVISIBLE);   //将ScrollView隐藏，不然空数据的界面看起来有点怪
             requestWeather(weatherId);                     //调用该方法从服务器中获取天气数据
         }
+        String bingPic = preferences.getString("bing_pic",null);
+        if (bingPic != null){
+            //有缓存时直接调用Glide加载背景图片
+            Glide.with(this).load(bingPic).into(bingPicImg);
+        } else {
+            //没缓存时调用loadBingPic（）方法获取必应的每日一图
+            loadBingPic();
+        }
     }
+
 
 
     /**
@@ -115,6 +137,35 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
+
+            }
+        });
+        loadBingPic();
+    }
+
+
+    /**
+     * 加载必应每日一图
+     */
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkhttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(bingPicImg);
                     }
                 });
 
