@@ -6,6 +6,11 @@ import android.view.View;
 import com.example.seven.coolweather.db.City;
 import com.example.seven.coolweather.db.County;
 import com.example.seven.coolweather.db.Province;
+<<<<<<< HEAD
+=======
+import com.example.seven.coolweather.gson.Weather;
+import com.google.gson.Gson;
+>>>>>>> bug1.0
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +40,11 @@ public class Utility {
         return  false;
     }
 
+<<<<<<< HEAD
     /*
+=======
+    /**
+>>>>>>> bug1.0
        解析和处理服务器返回的市级数据
      */
     public static boolean handlerCityResponse(String response, int provinceId){
@@ -59,7 +68,11 @@ public class Utility {
         return  false;
     }
 
+<<<<<<< HEAD
     /*
+=======
+    /**
+>>>>>>> bug1.0
        解析和处理服务器返回的县级的数据
      */
     public static boolean handlerCountyRsponse(String response, int cityId){
@@ -82,8 +95,27 @@ public class Utility {
         return  false;
     }
 
+<<<<<<< HEAD
     /*
        将返回的JSON数据解析成Weather实体类
      */
+=======
+    /**
+       将返回的JSON数据解析成Weather实体类
+     */
+    public static Weather handlerWeatherResponse(String response){
+        try{
+            //将天气数据的主体内容解析出来
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            //通过formJson()方法将json对象转变为Weather对象
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+>>>>>>> bug1.0
 
 }
