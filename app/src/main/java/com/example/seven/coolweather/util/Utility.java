@@ -6,11 +6,10 @@ import android.view.View;
 import com.example.seven.coolweather.db.City;
 import com.example.seven.coolweather.db.County;
 import com.example.seven.coolweather.db.Province;
-<<<<<<< HEAD
-=======
+
 import com.example.seven.coolweather.gson.Weather;
 import com.google.gson.Gson;
->>>>>>> bug1.0
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,11 +39,8 @@ public class Utility {
         return  false;
     }
 
-<<<<<<< HEAD
-    /*
-=======
+
     /**
->>>>>>> bug1.0
        解析和处理服务器返回的市级数据
      */
     public static boolean handlerCityResponse(String response, int provinceId){
@@ -68,11 +64,8 @@ public class Utility {
         return  false;
     }
 
-<<<<<<< HEAD
-    /*
-=======
-    /**
->>>>>>> bug1.0
+
+     /**
        解析和处理服务器返回的县级的数据
      */
     public static boolean handlerCountyRsponse(String response, int cityId){
@@ -95,11 +88,7 @@ public class Utility {
         return  false;
     }
 
-<<<<<<< HEAD
-    /*
-       将返回的JSON数据解析成Weather实体类
-     */
-=======
+
     /**
        将返回的JSON数据解析成Weather实体类
      */
@@ -116,6 +105,6 @@ public class Utility {
         }
         return null;
     }
->>>>>>> bug1.0
+
 
 }

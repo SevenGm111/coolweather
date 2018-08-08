@@ -2,10 +2,7 @@ package com.example.seven.coolweather;
 
 
 import android.app.ProgressDialog;
-<<<<<<< HEAD
-=======
 import android.content.Intent;
->>>>>>> bug1.0
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -79,11 +76,7 @@ public class ChooseAreaFragment extends Fragment {
         titleText = view.findViewById(R.id.title_text);
         backButton = view.findViewById(R.id.back_button);
         listView = view.findViewById(R.id.list_view);
-<<<<<<< HEAD
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
-=======
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);  //第二个参数表示显示一行text
->>>>>>> bug1.0
         listView.setAdapter(adapter);
         return view;
     }
@@ -91,10 +84,7 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-<<<<<<< HEAD
-=======
         //对点击lisetView的点击事件进行处理，当点击的是省时，会跳到市的数据，当点的是市时，会跳到县级的数据,当点击的是县时，跳转到WeatherActivity（显示天气信息)
->>>>>>> bug1.0
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -104,46 +94,33 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEN_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
-<<<<<<< HEAD
-                } /*else if (currentLevel == LEVEN_COUNTY){
-                    String weatherId = countyList.get(position).getWeatherId();
-                    if (getActivity() instanceof MainActivity){
-                        Intent intent = new Intent(getActivity(),Weath)
-                    }
-                }*/
-=======
                 } else if (currentLevel == LEVEN_COUNTY){
                     String weatherId = countyList.get(position).getWeatherId();
-                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity){
+                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                        intent.putExtra("weather_id",weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();  //关闭滑动菜单
+                        activity.swipeRefreshLayout.setRefreshing(true);  //更新下拉刷新进度条
+                        activity.requestWeather(weatherId);
+                    }
                 }
->>>>>>> bug1.0
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-<<<<<<< HEAD
-            public void onClick(View view) {
-                if (currentLevel == LEVEN_COUNTY) {
-                    queryCities();
-                } else if (currentLevel == LEVEN_CITY) {
-=======
             public void onClick(View view) {      //对返回按钮进行判断
                 if (currentLevel == LEVEN_COUNTY) {   //如果当前是县级，那就返回市级
                     queryCities();
                 } else if (currentLevel == LEVEN_CITY) { //如果当前是市级，那就返回省级
->>>>>>> bug1.0
                     queryProvinces();
                 }
             }
         });
-<<<<<<< HEAD
-        queryProvinces();
-=======
         queryProvinces();   //从这里开始加载省级的数据
->>>>>>> bug1.0
     }
 
     /**
@@ -151,13 +128,8 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryProvinces() {
         titleText.setText("中国");
-<<<<<<< HEAD
-        backButton.setVisibility(View.GONE);
-        provinceList = LitePal.findAll(Province.class);  //DataSupport。findAll失效
-=======
         backButton.setVisibility(View.GONE);  //隐藏返回按钮
         provinceList = LitePal.findAll(Province.class);  //在数据库中查询数据     DataSupport.findAll失效
->>>>>>> bug1.0
         if (provinceList.size() > 0) {
             dataList.clear();
             for (Province province : provinceList) {
@@ -166,11 +138,7 @@ public class ChooseAreaFragment extends Fragment {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEN_PROVINCE;
-<<<<<<< HEAD
-        } else {
-=======
         } else {   //如果没有查询到，则到服务器上查询
->>>>>>> bug1.0
             String address = "http://guolin.tech/api/china";
             queryFromServer(address, "province");
         }
@@ -248,11 +216,7 @@ public class ChooseAreaFragment extends Fragment {
                 String responseText = response.body().string();
                 boolean result = false;
                 if ("province".equals(type)) {
-<<<<<<< HEAD
-                    result = Utility.handlerProvinceResponse(responseText);
-=======
                     result = Utility.handlerProvinceResponse(responseText);  //解析和处理返回的数据
->>>>>>> bug1.0
                 } else if ("city".equals(type)) {
                     result = Utility.handlerCityResponse(responseText, selectedProvince.getId());
                 } else if ("county".equals(type)) {
@@ -283,11 +247,7 @@ public class ChooseAreaFragment extends Fragment {
     /**
      * 显示进度对话框
      */
-<<<<<<< HEAD
-
-=======
 // TODO: 2018/8/1 把ProgressDialog变成ProgressBar
->>>>>>> bug1.0
     private void showProgressBar() {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(getActivity());

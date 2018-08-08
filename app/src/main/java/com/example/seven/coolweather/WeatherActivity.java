@@ -4,10 +4,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -31,6 +35,14 @@ import okhttp3.Response;
  */
 
 public class WeatherActivity extends AppCompatActivity {
+
+    public DrawerLayout drawerLayout;
+
+    private Button navButton;
+
+    public SwipeRefreshLayout swipeRefreshLayout;
+
+    private String mWeatherId;    //记录城市的天气Id
 
     private ScrollView weatherLayout;
 
@@ -57,6 +69,7 @@ public class WeatherActivity extends AppCompatActivity {
     private ImageView bingPicImg;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,18 +93,38 @@ public class WeatherActivity extends AppCompatActivity {
         comfortText = findViewById(R.id.comfort_text);
         carWashText = findViewById(R.id.car_wash_text);
         sportText = findViewById(R.id.sport_text);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navButton = findViewById(R.id.nav_button);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);   //设置下拉进度条的颜色
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this); //获取SharePreferences对象，这是一个轻量级的存储类
         String weatherString = preferences.getString("weather",null);
         if (weatherString != null){
             //有缓存时直接解析天气数据
             Weather weather = Utility.handlerWeatherResponse(weatherString);
+            mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
             //无缓存时去服务器中查询数据
-            String weatherId = getIntent().getStringExtra("weather_id");
-            //weatherLayout.setVisibility(View.INVISIBLE);   //将ScrollView隐藏，不然空数据的界面看起来有点怪
-            requestWeather(weatherId);                     //调用该方法从服务器中获取天气数据
+            mWeatherId = getIntent().getStringExtra("weather_id");
+            weatherLayout.setVisibility(View.INVISIBLE);   //将ScrollView隐藏，不然空数据的界面看起来有点怪
+            requestWeather(mWeatherId);                     //调用该方法从服务器中获取天气数据
         }
+        //当触发下拉刷新控件时，将调用onRefresh（）方法
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(mWeatherId);  //调用该方法从服务器中获取天气数据
+            }
+        });
+        //点击滑动菜单按钮
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);  //打开滑动菜单
+            }
+        });
         String bingPic = preferences.getString("bing_pic",null);
         if (bingPic != null){
             //有缓存时直接调用Glide加载背景图片
@@ -108,7 +141,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id 到服务器中请求城市天气信息
      * @param weatherId
      */
-    private void requestWeather(final String weatherId) {
+    public void requestWeather(final String weatherId) {
         String weatherUri = "http://guolin.tech/api/weather?cityid="+ weatherId +
                 "&key=d0f086f0778347e9be7699a456b725e3";
         HttpUtil.sendOkhttpRequest(weatherUri, new Callback() {
@@ -137,6 +170,7 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefreshLayout.setRefreshing(false);  //表示刷新事件结束，隐藏刷新进度条
                     }
                 });
 
